@@ -20,11 +20,15 @@ function tryParse(file, json) {
 function shush(file) {
     var root, abs, json;
 
-    root = path.resolve(caller());
-    root = path.dirname(root);
+    if (file.charAt(0) === '.') {
+        root = path.resolve(caller());
+        root = path.dirname(root);
 
-    abs = path.resolve(root, file);
-    abs = require.resolve(abs);
+        abs = path.resolve(root, file);
+        abs = require.resolve(abs);
+    } else {
+        abs = require.resolve(file);
+    }
 
     json = fs.readFileSync(abs, 'utf8');
     json = strip(json);

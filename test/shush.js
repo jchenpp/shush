@@ -2,7 +2,9 @@
 
 var test = require('tape'),
     path = require('path'),
-    shush = require('../');
+    shush = require('../'),
+    Module = require('module'),
+    sinon = require('sinon');
 
 test('shush', function (t) {
 
@@ -51,4 +53,17 @@ test('shush', function (t) {
 
     t.test('resolves absolute file', createSanity(path.resolve('./test/fixtures/combo')))
 
+    t.test('resolves from module',
+        sinon.test(
+            function (t) {
+                var mockReq = sinon.mock(Module);
+                mockReq.expects('_resolveFilename').once().returns(path.resolve('./test/fixtures/combo.json'));
+                var json = shush('hello/world');
+                mockReq.verify();
+                mockReq.restore();
+                t.ok(json);
+                t.end();
+            }
+        )
+    )
 });
